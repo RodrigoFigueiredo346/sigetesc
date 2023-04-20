@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -8,18 +9,15 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  DateTime date = DateTime.now();
+  DateTime date = DateTime(2023);
 
   void subtractMonth() {
-    int currentMonth = date.month;
+    int currentMonth = date.month - 1;
+    if (currentMonth == 0) {
+      currentMonth = 12;
+    }
 
-    if (currentMonth == 1 ||
-        currentMonth == 3 ||
-        currentMonth == 5 ||
-        currentMonth == 7 ||
-        currentMonth == 8 ||
-        currentMonth == 10 ||
-        currentMonth == 12) {
+    if (currentMonth == 1 || currentMonth == 3 || currentMonth == 5 || currentMonth == 7 || currentMonth == 8 || currentMonth == 10 || currentMonth == 12) {
       date = date.subtract(const Duration(days: 31));
     } else if (currentMonth == 4 || currentMonth == 6 || currentMonth == 9 || currentMonth == 11) {
       date = date.subtract(const Duration(days: 30));
@@ -33,13 +31,7 @@ class _HomePageState extends State<HomePage> {
   void incrementMonth() {
     int currentMonth = date.month;
 
-    if (currentMonth == 1 ||
-        currentMonth == 3 ||
-        currentMonth == 5 ||
-        currentMonth == 7 ||
-        currentMonth == 8 ||
-        currentMonth == 10 ||
-        currentMonth == 12) {
+    if (currentMonth == 1 || currentMonth == 3 || currentMonth == 5 || currentMonth == 7 || currentMonth == 8 || currentMonth == 10 || currentMonth == 12) {
       date = date.add(const Duration(days: 31));
     } else if (currentMonth == 4 || currentMonth == 6 || currentMonth == 9 || currentMonth == 11) {
       date = date.add(const Duration(days: 30));
@@ -107,39 +99,63 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    final mediaQueryData = MediaQuery.of(context);
+    final screenWidth = mediaQueryData.size.width;
+    final screenHeight = mediaQueryData.size.height;
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('E.E.E.M. Ernesto Alves de Oliveira'),
         actions: [
-          IconButton(
-            onPressed: () {
-              subtractMonth();
-              setState(() {});
-            },
-            icon: const Icon(Icons.arrow_back),
-          ),
-          Center(
-            child: Text(
-              '${getCurrentMonthDescription()} / ${date.year}',
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-              ),
+          Container(
+            width: screenWidth * 0.2,
+            // decoration: BoxDecoration(
+            //   border: Border.all(),
+            // ),
+            child: Row(
+              children: [
+                IconButton(
+                  onPressed: () {
+                    subtractMonth();
+                    setState(() {});
+                  },
+                  icon: const Icon(Icons.arrow_back),
+                ),
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      '${getCurrentMonthDescription()} / ${date.year}',
+                      maxLines: 1,
+                      style: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ),
+                  ),
+                ),
+                IconButton(
+                  onPressed: () {
+                    incrementMonth();
+                    setState(() {});
+                  },
+                  icon: const Icon(Icons.arrow_forward),
+                ),
+              ],
             ),
-          ),
-          IconButton(
-            onPressed: () {
-              incrementMonth();
-              setState(() {});
-            },
-            icon: const Icon(Icons.arrow_forward),
           ),
         ],
       ),
-      body: Center(
+      body: SizedBox.expand(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[],
+          children: <Widget>[
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                Text(DateFormat('dd/MM/yyyy').format(date)),
+              ],
+            )
+          ],
         ),
       ),
     );
